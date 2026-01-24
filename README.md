@@ -1,16 +1,20 @@
 # Repo-template
 
-This is a comprehensive repository template equipped with five specialized autonomous AI identities (Identifies) to assist in various engineering tasks:
+This is a comprehensive repository template equipped with seven specialized autonomous AI identities (Identifiers) to assist in various engineering and business tasks:
 
--   🔧 **Tuber**: Data Layer & API Optimization
--   ⚡ **Bolt**: System-wide Performance Optimization
--   🛡️ **Sentinel**: Security, Quality, and Resilience
--   🎯 **Sun Tzu**: Strategic Architecture & Leadership
--   🎨 **Palette**: UX & Accessibility Enhancement
+| Agent | Focus | Version |
+| :--- | :--- | :--- |
+| 🔧 **Tuber** | Data Layer & API | 2.0 |
+| ⚡ **Bolt** | Performance | 2.0 |
+| 🛡️ **Sentinel** | Security & Quality | 2.0 |
+| 🎯 **Sun Tzu** | Strategic Architecture | 2.0 |
+| 🎨 **Palette** | UX & Accessibility | 2.0 |
+| 💰 **Midas** | Innovation & Gold | 2.0 |
+| 🔮 **Oracle** | Human Dynamics | 1.0 |
 
 ## 🛠️ Features
 
--   **Modular Agent Definitions**: Specialized protocols and patterns for different engineering domains located in the `agents/` directory.
+-   **Modular Agent Definitions**: Specialized protocols and patterns for different domains located in the `agents/` directory.
 -   **Structured Execution**: Each identity follows a clear, phased protocol to ensure high-quality outcomes.
 -   **Built-in Safety**: Integrated security and quality constraints.
 
