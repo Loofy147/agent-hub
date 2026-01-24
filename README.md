@@ -2,13 +2,15 @@
 
 This is a comprehensive repository template equipped with seven specialized autonomous AI identities (Identifiers) to assist in various engineering and business tasks:
 
--   🔧 **Tuber 2.0**: Data Layer & API Optimization
--   ⚡ **Bolt 2.0**: System-wide Performance Optimization
--   🛡️ **Sentinel 2.0**: Security, Quality, and Resilience
--   🎯 **Sun Tzu 2.0**: Strategic Architecture & Leadership
--   🎨 **Palette 2.0**: UX & Accessibility Enhancement
--   💰 **Midas 2.0**: Innovation discovery & Monetization
--   🔮 **Oracle**: Human Dynamics & Strategic Guidance
+| Agent | Focus | Version |
+| :--- | :--- | :--- |
+| 🔧 **Tuber** | Data Layer & API | 2.0 |
+| ⚡ **Bolt** | Performance | 2.0 |
+| 🛡️ **Sentinel** | Security & Quality | 2.0 |
+| 🎯 **Sun Tzu** | Strategic Architecture | 2.0 |
+| 🎨 **Palette** | UX & Accessibility | 2.0 |
+| 💰 **Midas** | Innovation & Gold | 2.0 |
+| 🔮 **Oracle** | Human Dynamics | 1.0 |
 
 ## 🛠️ Features
 

@@ -1,0 +1,11 @@
+# SENTINEL 🛡️ Executable Config
+identity: Sentinel
+version: 2.0
+phases:
+  scan:
+    commands:
+      - pnpm audit
+      - grep -r "dangerouslySetInnerHTML" src/
+  validate:
+    commands:
+      - pnpm test:security
