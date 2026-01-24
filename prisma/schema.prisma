@@ -1,0 +1,378 @@
+// TUBER: Multi-tenant database schema for AgentHub SaaS
+// Expected performance: Row-level security, < 50ms query time, 99.9% uptime
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// WORKSPACE & BILLING
+// ============================================================================
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique // URL-friendly workspace identifier
+
+  // Subscription & Billing
+  plan              String   @default("starter") // 'starter' | 'professional' | 'enterprise'
+  stripeCustomerId  String?  @unique
+  stripeSubscriptionId String? @unique
+  subscriptionStatus String  @default("active") // 'active' | 'canceled' | 'past_due'
+  trialEndsAt       DateTime?
+
+  // Usage Limits
+  executionsThisMonth Int     @default(0)
+  executionLimit      Int     @default(90) // 3/day for starter
+  storageUsedMB       Int     @default(0)
+  storageLimitMB      Int     @default(1000)
+
+  // Relations
+  users       User[]
+  executions  AgentExecution[]
+  apiKeys     ApiKey[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([plan])
+  @@index([subscriptionStatus])
+}
+
+// ============================================================================
+// USERS & AUTHENTICATION
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+
+  // Password auth (hashed with bcrypt)
+  passwordHash  String?
+
+  // OAuth providers
+  githubId      String?   @unique
+  googleId      String?   @unique
+
+  // Multi-tenant association
+  workspaceId   String
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  role          String    @default("member") // 'owner' | 'admin' | 'member'
+
+  // Activity tracking
+  lastLoginAt   DateTime?
+  loginCount    Int       @default(0)
+
+  // Relations
+  sessions      Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workspaceId, role])
+  @@index([email])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expires])
+}
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  name        String   // User-friendly name "Production API Key"
+  key         String   @unique // Hashed API key
+  keyPrefix   String   // First 8 chars for display "ak_prod_..."
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  // Permissions
+  scopes      String[] // ['executions:create', 'executions:read']
+
+  // Usage tracking
+  lastUsedAt  DateTime?
+  usageCount  Int      @default(0)
+
+  // Expiration
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([workspaceId])
+  @@index([keyPrefix])
+}
+
+// ============================================================================
+// AGENT EXECUTIONS
+// ============================================================================
+
+model AgentExecution {
+  id String @id @default(cuid())
+
+  // Multi-tenant isolation
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  // Agent metadata
+  agentType    String  // 'tuber' | 'bolt' | 'sentinel' | 'suntzu' | 'palette' | 'midas' | 'oracle'
+  agentVersion String  @default("2.0.0")
+
+  // Execution state
+  status   String   @default("queued") // 'queued' | 'running' | 'completed' | 'failed' | 'canceled'
+  phase    String?  // Current phase: 'diagnose' | 'plan' | 'implement' | etc
+  progress Int      @default(0) // 0-100
+
+  // Input context
+  input Json // { codebase, constraints, focus }
+
+  // Output & results
+  output Json? // Agent-specific output format
+  error  String? @db.Text
+
+  // Execution logs (streamed to separate table for performance)
+  // See ExecutionLog model
+
+  // Timing
+  queuedAt    DateTime  @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  duration    Int?      // milliseconds
+
+  // Resource usage
+  cpuTimeMs   Int?      // CPU time in milliseconds
+  memoryPeakMB Int?     // Peak memory usage in MB
+
+  // BullMQ job reference
+  jobId       String?   @unique
+
+  // Relations
+  logs ExecutionLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workspaceId, status])
+  @@index([workspaceId, agentType])
+  @@index([status, queuedAt])
+  @@index([jobId])
+}
+
+model ExecutionLog {
+  id String @id @default(cuid())
+
+  executionId String
+  execution   AgentExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  // Log entry
+  timestamp DateTime @default(now())
+  level     String   // 'info' | 'warn' | 'error' | 'debug'
+  phase     String?  // Which phase this log is from
+  message   String   @db.Text
+  metadata  Json?    // Additional structured data
+
+  @@index([executionId, timestamp])
+  @@index([level])
+}
+
+// ============================================================================
+// AGENT MARKETPLACE (Future Feature)
+// ============================================================================
+
+model AgentTemplate {
+  id String @id @default(cuid())
+
+  // Template metadata
+  name        String
+  slug        String  @unique
+  description String  @db.Text
+  icon        String  // Emoji or icon name
+  category    String  // 'optimization' | 'security' | 'business' | etc
+
+  // Version control
+  version     String
+  deprecated  Boolean @default(false)
+
+  // Template config (YAML)
+  config      Json    // Full agent YAML configuration
+
+  // Marketplace info
+  isOfficial  Boolean @default(false)
+  isFeatured  Boolean @default(false)
+  downloads   Int     @default(0)
+  rating      Float?
+
+  // Publishing
+  publishedAt DateTime?
+  publishedBy String?  // User ID who published
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([category, isFeatured])
+}
+
+// ============================================================================
+// ANALYTICS & METRICS
+// ============================================================================
+
+model WorkspaceMetrics {
+  id String @id @default(cuid())
+
+  workspaceId String
+  date        DateTime @db.Date // Daily rollup
+
+  // Execution metrics
+  executionsTotal     Int @default(0)
+  executionsSuccess   Int @default(0)
+  executionsFailed    Int @default(0)
+  avgExecutionTimeMs  Int @default(0)
+
+  // Agent usage breakdown
+  tuberExecutions     Int @default(0)
+  boltExecutions      Int @default(0)
+  sentinelExecutions  Int @default(0)
+  suntzuExecutions    Int @default(0)
+  paletteExecutions   Int @default(0)
+  midasExecutions     Int @default(0)
+  oracleExecutions    Int @default(0)
+
+  // Resource usage
+  totalCpuTimeMs      Int @default(0)
+  totalMemoryMB       Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@unique([workspaceId, date])
+  @@index([date])
+}
+
+// ============================================================================
+// BILLING & INVOICES
+// ============================================================================
+
+model Invoice {
+  id String @id @default(cuid())
+
+  workspaceId String
+
+  // Stripe data
+  stripeInvoiceId String @unique
+  status          String // 'draft' | 'open' | 'paid' | 'void'
+
+  // Amounts (in cents)
+  amountDue  Int
+  amountPaid Int
+
+  // Billing period
+  periodStart DateTime
+  periodEnd   DateTime
+
+  // Payment
+  paidAt      DateTime?
+  dueDate     DateTime
+
+  // Invoice URL
+  invoiceUrl  String?
+  invoicePdf  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([workspaceId])
+  @@index([status])
+}
+
+// ============================================================================
+// AUDIT LOG (Security & Compliance)
+// ============================================================================
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  // Who did what
+  workspaceId String
+  userId      String?
+  action      String   // 'workspace.created' | 'user.invited' | 'execution.started'
+
+  // Context
+  resourceType String? // 'workspace' | 'user' | 'execution'
+  resourceId   String?
+
+  // Request metadata
+  ipAddress    String?
+  userAgent    String?
+
+  // Additional data
+  metadata     Json?
+
+  timestamp DateTime @default(now())
+
+  @@index([workspaceId, timestamp])
+  @@index([userId, timestamp])
+  @@index([action])
+}
+
+// ============================================================================
+// WEBHOOKS (For integrations)
+// ============================================================================
+
+model Webhook {
+  id String @id @default(cuid())
+
+  workspaceId String
+
+  // Webhook configuration
+  url         String
+  events      String[] // ['execution.completed', 'execution.failed']
+  secret      String   // For signature verification
+
+  // Status
+  enabled     Boolean  @default(true)
+  failureCount Int     @default(0)
+  lastFailureAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workspaceId])
+}
+
+model WebhookDelivery {
+  id String @id @default(cuid())
+
+  webhookId String
+
+  // Delivery details
+  event       String
+  payload     Json
+  response    Json?
+  statusCode  Int?
+
+  // Status
+  status      String   @default("pending") // 'pending' | 'success' | 'failed'
+  attempts    Int      @default(0)
+  nextRetryAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([webhookId, status])
+  @@index([nextRetryAt])
+}
