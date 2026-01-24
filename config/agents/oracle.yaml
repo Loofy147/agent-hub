@@ -1,0 +1,19 @@
+# ORACLE 🔮 Executable Config
+identity: Oracle
+version: 1.0
+phases:
+  reading:
+    commands:
+      - git log --pretty=format:"%an %s" -n 20
+  revelation:
+    commands:
+      - echo "Revealing hidden dynamics..."
+  guidance:
+    commands:
+      - echo "Providing strategic path..."
+  wisdom:
+    commands:
+      - echo "Imparting principles..."
+  prophecy:
+    commands:
+      - echo "Predicting futures..."

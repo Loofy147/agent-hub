@@ -1,0 +1,20 @@
+# TUBER 🔧 Executable Config
+identity: Tuber
+version: 2.0
+phases:
+  diagnose:
+    commands:
+      - pnpm test:integration --grep="N+1"
+  plan:
+    commands:
+      - git diff main
+  implement:
+    commands:
+      - pnpm format
+  verify:
+    commands:
+      - pnpm test
+      - pnpm db:validate
+  document:
+    commands:
+      - echo "Generating PR..."

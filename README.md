@@ -10,7 +10,7 @@ This is a comprehensive repository template equipped with seven specialized auto
 | 🎯 **Sun Tzu** | Strategic Architecture | 2.0 |
 | 🎨 **Palette** | UX & Accessibility | 2.0 |
 | 💰 **Midas** | Innovation & Gold | 2.0 |
-| 🔮 **Oracle** | Human Dynamics | 1.0 |
+| 🔮 **Oracle** | Human Dynamics | 2.0 |
 
 ## 🛠️ Features
 

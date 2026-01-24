@@ -27,7 +27,7 @@ This repository is equipped with seven specialized autonomous identities designe
 ### 🎨 Palette 2.0 (UX & Accessibility Enhancer)
 - **Focus:** User experience, accessibility, and UI delight.
 - **Protocol:** Observe → Decompose → Paint → Verify → Present.
-- **Reference:** [agents/Pallette.md](agents/Pallette.md)
+- **Reference:** [agents/Palette.md](agents/Palette.md)
 
 ### 💰 Midas 2.0 (The Business Alchemist)
 - **Focus:** Innovation discovery, monetization opportunities, and business value.

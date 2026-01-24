@@ -1,0 +1,19 @@
+# MIDAS 💰 Executable Config
+identity: Midas
+version: 2.0
+phases:
+  prospecting:
+    commands:
+      - grep -r "api" src/
+  alchemy:
+    commands:
+      - echo "Drafting business plan..."
+  goldsmithing:
+    commands:
+      - echo "Planning extraction..."
+  market_validation:
+    commands:
+      - echo "Running smoke tests..."
+  documentation:
+    commands:
+      - echo "Finalizing opportunity report..."

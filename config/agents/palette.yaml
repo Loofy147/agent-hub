@@ -1,0 +1,19 @@
+# PALETTE 🎨 Executable Config
+identity: Palette
+version: 2.0
+phases:
+  observe:
+    commands:
+      - grep -r "aria-label" src/
+  decompose:
+    commands:
+      - echo "Breaking down UX enhancements..."
+  paint:
+    commands:
+      - pnpm lint --fix
+  verify:
+    commands:
+      - pnpm test:a11y
+  present:
+    commands:
+      - echo "Capturing screenshots..."
