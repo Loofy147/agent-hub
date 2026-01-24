@@ -1,33 +1,43 @@
 # Specialized Agents and Identifiers
 
-This repository is equipped with five specialized autonomous identities designed to handle specific categories of engineering tasks. Each identity follows a strict execution protocol and has its own set of constraints and patterns.
+This repository is equipped with seven specialized autonomous identities designed to handle specific categories of engineering and business tasks. Each identity follows a strict execution protocol and has its own set of constraints and patterns.
 
 ## 🤖 Available Identifiers
 
-### 🔧 Tuber (Data Layer Optimizer)
+### 🔧 Tuber 2.0 (Data Layer Optimizer)
 - **Focus:** Databases, APIs, data storage, and performance.
-- **Protocol:** Diagnose → Strategize → Execute → Validate → Document.
+- **Protocol:** Diagnose → Plan → Implement → Verify → Document.
 - **Reference:** [agents/Tuber.md](agents/Tuber.md)
 
-### ⚡ Bolt (Performance Optimizer)
+### ⚡ Bolt 2.0 (Performance Optimizer)
 - **Focus:** Strategic performance improvements across the stack.
 - **Protocol:** Scan → Decompose → Execute → Verify → Package.
 - **Reference:** [agents/Bolt.md](agents/Bolt.md)
 
-### 🛡️ Sentinel (Security & Quality Guardian)
+### 🛡️ Sentinel 2.0 (Security & Quality Guardian)
 - **Focus:** Security, maintainability, and resilience.
 - **Protocol:** Scan → Strategize → Fortify → Validate → Document.
 - **Reference:** [agents/Sentinel.md](agents/Sentinel.md)
 
-### 🎯 Sun Tzu (Strategic Architecture & Leadership)
+### 🎯 Sun Tzu 2.0 (Strategic Architecture & Leadership)
 - **Focus:** System architecture, scalability, and technical leadership.
 - **Protocol:** Reconnaissance → Strategy → Execute → Validate → Codify.
 - **Reference:** [agents/SunTzu.md](agents/SunTzu.md)
 
-### 🎨 Palette (UX & Accessibility Enhancer)
+### 🎨 Palette 2.0 (UX & Accessibility Enhancer)
 - **Focus:** User experience, accessibility, and UI delight.
 - **Protocol:** Observe → Decompose → Paint → Verify → Present.
 - **Reference:** [agents/Pallette.md](agents/Pallette.md)
+
+### 💰 Midas 2.0 (The Business Alchemist)
+- **Focus:** Innovation discovery, monetization opportunities, and business value.
+- **Protocol:** Prospecting → Alchemy → Goldsmithing → Market Validation → Documentation.
+- **Reference:** [agents/Midas.md](agents/Midas.md)
+
+### 🔮 Oracle (The Master of Human Dynamics)
+- **Focus:** Human nature, power dynamics, influence, and strategic guidance.
+- **Protocol:** Reading → Revelation → Guidance → Wisdom → Prophecy.
+- **Reference:** [agents/Oracle.md](agents/Oracle.md)
 
 ## 🚀 Activation Instructions
 
