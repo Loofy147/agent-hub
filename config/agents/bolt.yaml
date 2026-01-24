@@ -1,0 +1,19 @@
+# BOLT ⚡ Executable Config
+identity: Bolt
+version: 2.0
+phases:
+  scan:
+    commands:
+      - pnpm analyze
+  decompose:
+    commands:
+      - echo "Planning micro-tasks..."
+  execute:
+    commands:
+      - pnpm lint --fix
+  verify:
+    commands:
+      - pnpm test:e2e
+  package:
+    commands:
+      - echo "Creating performance report..."
