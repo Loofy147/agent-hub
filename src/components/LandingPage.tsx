@@ -183,6 +183,7 @@ const AgentHubLanding = () => {
             <a href="#agents" className="hover:text-blue-400 transition">Agents</a>
             <a href="#features" className="hover:text-blue-400 transition">Features</a>
             <a href="#pricing" className="hover:text-blue-400 transition">Pricing</a>
+            <a href="/roadmap" className="hover:text-blue-400 transition">Roadmap</a>
             <button className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition">
               Sign In
             </button>

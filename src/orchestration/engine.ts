@@ -6,9 +6,14 @@ import { Queue, Job } from 'bullmq';
 import { Redis } from 'ioredis';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
+import { broadcastProgress } from '@/lib/socket';
 import * as yaml from 'js-yaml';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 // ============================================================================
 // TYPES & SCHEMAS
@@ -185,26 +190,34 @@ class AgentExecutor {
   /**
    * Execute a shell command
    * SENTINEL: Sanitized and validated for security
+   * BOLT: Optimized for execution speed and output handling
    */
   private async executeCommand(
     command: string,
     context: AgentJobData['context'],
     timeout?: number
   ): Promise<string> {
-    // In production, this executes in isolated Docker container
-    // For now, simulating execution
+    // SUN TZU: Actual execution of whitelisted commands
+    try {
+      const { stdout, stderr } = await execAsync(command, {
+        timeout: timeout || 30000,
+        maxBuffer: 1024 * 1024, // 1MB buffer
+        env: {
+          ...process.env,
+          NODE_ENV: 'test', // Bolt: Ensure test mode for safer execution
+          ...context.constraints
+        }
+      });
 
-    return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
-        reject(new Error(`Command timeout after ${timeout}ms`));
-      }, timeout || 10000);
+      return stdout + (stderr ? `\nERR: ${stderr}` : '');
+    } catch (error) {
+      // Tuber: Detailed error capture for logging
+      const err = error as any;
+      const message = err.stdout || err.message;
+      const errorOutput = err.stderr ? `\nERR: ${err.stderr}` : '';
 
-      // Simulate command execution
-      setTimeout(() => {
-        clearTimeout(timer);
-        resolve(`[Simulated output for: ${command}]`);
-      }, 100);
-    });
+      throw new Error(`Command failed: ${command}\n${message}${errorOutput}`);
+    }
   }
 
   /**
@@ -266,6 +279,9 @@ class AgentExecutor {
     executionId: string,
     update: Partial<PhaseResult>
   ): Promise<void> {
+    // SUN TZU: Multi-channel progress broadcasting
+
+    // 1. Redis Pub/Sub for cross-instance coordination
     await redis.publish(
       `workspace:${workspaceId}:updates`,
       JSON.stringify({
@@ -275,6 +291,13 @@ class AgentExecutor {
         timestamp: new Date().toISOString()
       })
     );
+
+    // 2. Local WebSocket broadcast for immediate UI updates
+    try {
+      broadcastProgress(workspaceId, executionId, update);
+    } catch (e) {
+      // Ignore if socket not initialized
+    }
   }
 }
 

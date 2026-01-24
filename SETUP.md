@@ -25,7 +25,8 @@
 ### ✅ Orchestration Engine (Sun Tzu + Tuber)
 - **Core Engine:** BullMQ worker with phase execution
 - Agent configuration loader (YAML → validated execution)
-- Real-time progress via Redis pub/sub
+- **Functional Execution:** Real shell execution for whitelisted commands
+- **Real-time Progress:** Redis pub/sub + WebSocket broadcasting
 - Sandbox execution framework (Docker-ready)
 - Comprehensive error handling and retry logic
 
