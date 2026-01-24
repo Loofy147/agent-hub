@@ -209,15 +209,29 @@ class AgentExecutor {
 
   /**
    * Validate command for security
-   * SENTINEL: Prevent malicious commands
+   * SENTINEL: Prevent malicious commands via strict whitelist and regex
    */
   private validateCommand(command: string): void {
-    // Blacklist dangerous commands
-    const dangerous = ['rm -rf', 'sudo', 'curl', 'wget', 'ssh'];
+    // SENTINEL: Only allow pnpm, git, and echo commands for now
+    const allowedPatterns = [
+      /^pnpm (test|lint|format|db:validate|test:integration)( --grep=".+")?$/,
+      /^git (diff|status|log)( .+)?$/,
+      /^echo ".+"$/
+    ];
 
-    for (const pattern of dangerous) {
-      if (command.includes(pattern)) {
-        throw new Error(`Dangerous command detected: ${pattern}`);
+    const isAllowed = allowedPatterns.some(pattern => pattern.test(command));
+
+    if (!isAllowed) {
+      // Log attempted injection for Sentinel monitoring
+      console.error(`[SENTINEL] Blocked unauthorized command: ${command}`);
+      throw new Error(`Unauthorized command detected. Only specific maintenance commands are allowed.`);
+    }
+
+    // Secondary check for common bypass characters
+    const forbiddenChars = [';', '&', '|', '>', '<', '`', '$'];
+    for (const char of forbiddenChars) {
+      if (command.includes(char) && !command.startsWith('echo')) {
+        throw new Error(`Forbidden character '${char}' detected in command.`);
       }
     }
   }
