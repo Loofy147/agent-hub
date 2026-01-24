@@ -168,7 +168,7 @@ mkdir -p config/agents
 
 Create these API routes:
 
-**`app/api/auth/[...nextauth]/route.ts`:**
+**`app/api/v1/auth/[...nextauth]/route.ts`:**
 ```typescript
 import NextAuth from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -177,7 +177,7 @@ const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
 ```
 
-**`app/api/executions/route.ts`:**
+**`app/api/v1/executions/route.ts`:**
 ```typescript
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -241,7 +241,7 @@ export async function GET(req: NextRequest) {
 }
 ```
 
-**`app/api/signup/route.ts`:**
+**`app/api/v1/signup/route.ts`:**
 ```typescript
 import { NextRequest, NextResponse } from 'next/server';
 import { signup } from '@/lib/auth';

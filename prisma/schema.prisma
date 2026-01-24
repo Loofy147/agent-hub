@@ -163,6 +163,9 @@ model AgentExecution {
   // BullMQ job reference
   jobId       String?   @unique
 
+  // Soft delete
+  deletedAt   DateTime?
+
   // Relations
   logs ExecutionLog[]
 

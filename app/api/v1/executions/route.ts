@@ -52,7 +52,23 @@ export async function GET(req: NextRequest) {
   }
 
   const executions = await prisma.agentExecution.findMany({
-    where: { workspaceId: session.user.workspaceId },
+    where: {
+      workspaceId: session.user.workspaceId,
+      deletedAt: null
+    },
+    select: {
+      id: true,
+      agentType: true,
+      agentVersion: true,
+      status: true,
+      phase: true,
+      progress: true,
+      startedAt: true,
+      completedAt: true,
+      duration: true,
+      createdAt: true
+      // BOLT: Exclude large JSON fields for list view
+    },
     orderBy: { createdAt: 'desc' },
     take: 50
   });
